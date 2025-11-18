@@ -1,0 +1,16 @@
+{
+    "RateAI2O3": 0.1,
+    "CycleTime_AI2O3": 30.43,
+    "Thickness_AI2O3": 0,
+    "RateHZO": 0.16666666666666666,
+    "CycleTime_HZO": 102.8,
+    "Thickness_HZO": 12.71,
+    "StableTime": 3601,
+    "PreheatTime": 679,
+    "ALD_Power_Preheat": 2.4,
+    "ALD_Power_Stable": 1.792,
+    "Area_Wafer": 81 ,
+    "tool_efficiency": 0.7,
+    "fab_overhead_factor": 0.6,
+    "fefet_area_efficiency": 0.2
+}

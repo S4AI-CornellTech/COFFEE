@@ -9,7 +9,7 @@ import sys
 
 from dram_model  import Fab_DRAM
 from ssd_model   import Fab_SSD
-from logic_model import Fab_Logic
+from COFFEE.logic_model_CMOS import Fab_Logic
 
 def main():
     Fab_DRAM(config="ddr4_10nm")
