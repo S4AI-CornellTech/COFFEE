@@ -1,5 +1,5 @@
 import json
-from logic_model_HZO import Fab_Logic  # Assume the file name is fab_logic_fefet.py
+from logic_model_HZO import Fab_Logic  
 
 # 1. Load the device thickness database
 with open('logic/fefet_devices.json', 'r') as f:

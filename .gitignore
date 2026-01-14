@@ -1,4 +1,6 @@
+__pycache__/
 *.pyc
-
-*.swp
-*.swo
+.DS_Store
+inputs/*.csv     
+outputs/*.csv    
+!inputs/.gitkeep 

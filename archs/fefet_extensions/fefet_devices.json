@@ -1,0 +1,30 @@
+{
+  "HZO_1": {
+    "Thickness_HZO": 10.0,
+    "Thickness_AI2O3": 3.0
+  },
+  "HZO_2": {
+    "Thickness_HZO": 10.0,
+    "Thickness_AI2O3": 3.0
+  },
+  "HZO_3": {
+    "Thickness_HZO": 15.0,
+    "Thickness_AI2O3": 0.0
+  },
+  "HZO_4": {
+    "Thickness_HZO": 16.35,
+    "Thickness_AI2O3": 2.64
+  },
+  "HZO_5": {
+    "Thickness_HZO": 16.35,
+    "Thickness_AI2O3": 2.68
+  },
+  "HZO_6": {
+    "Thickness_HZO": 12.71,
+    "Thickness_AI2O3": 0
+  },
+  "HZO_7": {
+    "Thickness_HZO": 10,
+    "Thickness_AI2O3": 1
+  }
+}
