@@ -18,17 +18,24 @@ To accurately model the manufacturing overhead, we adopt an area-weighted formul
 
 The total Energy Per Area (EPA) and Gas Per Area (GPA) for the FeFET process are calculated as:
 
-$$EPA_{FeFET} = EPA_{CMOS} + EPA_{FE-layer} \cdot AE$$ 
+$$EPA_{FeFET} = EPA_{CMOS} + EPA_{FE-layer} \cdot AE$$
+
 $$GPA_{FeFET} = GPA_{CMOS} + GPA_{FE-layer} \cdot AE$$
+
 Where:
 $AE$ (Area Efficiency): The ratio of the ferroelectric deposition area (memory array) to the total chip area.
+
 $EPA/GPA_{CMOS}$: Baseline metrics from standard logic processes (e.g., 28nm data from ACT).
+
 $EPA/GPA_{FE-layer}$: The additional footprint derived specifically from the Atomic Layer Deposition (ALD) of HZO/Al2O3 stacks.
 
 2. Lifetime & Operational CarbonTo complete the LCA, we combine the embodied carbon with operational energy:
-Operational: 
-$$OP_{access} = CI_{location} \times Energy_{read/write}$$$
-Lifetime: The effective lifespan is limited by NVM write endurance:
+Operational:
+
+$$OP_{access} = CI_{location} \times Energy_{read/write}$$
+
+$Lifetime: The effective lifespan is limited by NVM write endurance:
+
 $$Lifetime = \frac{Capacity \times Endurance_{cycles}}{Daily\_Access\_Rate}$$
 
 
