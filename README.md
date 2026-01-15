@@ -1,8 +1,8 @@
-# 3D-Carbon: An Analytical Carbon Modeling Tool for 3D and 2.5D Integrated Circuits
+# COFFEE: A Carbon-Modeling and Optimization Framework for HZO-based FeFET eNVMs
 
-FeFET-Carbon is a specialized carbon modeling framework designed to enable carbon-aware design space exploration for Ferroelectric FET (FeFET) based logic and memory systems. Built upon the foundational methodology of ACT, this tool extends the analytical boundaries from standard CMOS to emerging ferroelectric technologies.
+COFFEE is a  carbon modeling framework designed to enable carbon-aware design space exploration for hafnium–zirconium-oxide (HZO) Ferroelectric FET (FeFET) based on chip memory systems. Built upon the foundational methodology of ACT, this tool extends the analytical boundaries from standard CMOS to emerging ferroelectric technologies.
 
-This framework bridges the gap between process-level parameters (e.g., ALD deposition rates, HZO thickness) and architecture-level metrics (e.g., area efficiency, dynamic energy from NVMExplorer), providing a holistic Life Cycle Analysis (LCA) for FeFET hardware.
+This framework bridges the gap between process-level parameters (e.g., ALD deposition rates, HZO thickness) and architecture-level metrics (e.g., area efficiency, dynamic energy from NVMExplorer), providing a holistic Life Cycle Analysis (LCA) for HZO FeFET hardware.
 
 
 
