@@ -36,11 +36,11 @@ $$OP_{access} = CI_{location} \times Energy_{read/write}$$
 
 $Lifetime: The effective lifespan is limited by NVM write endurance:
 
-$$Lifetime = \frac{Capacity \times Endurance_{cycles}}{Daily\_Access\_Rate}$$
+$$Lifetime = \frac{Capacity \times Endurance_{cycles}}{Daily_Access_Rate}$$
 
 
 # File structure
-
+```
 .
 │
 ├── archs/                          # [Configuration Layer]
@@ -58,7 +58,7 @@ $$Lifetime = \frac{Capacity \times Endurance_{cycles}}{Daily\_Access\_Rate}$$
 ├── outputs/                        # Generated Carbon Reports
 └── main.py                         # Main entry point
 
-
+```
 
 # Getting Started
 
@@ -79,11 +79,14 @@ Python main.py
 
 If you use this tool, please cite our work:
 
+```
 COFFEE (This Work):@misc{wu2026,
   author = {Hongbang Wu, Xuesi Chen, Shubham Jadhav, Amit Lal, Lillian Pentecost, and Udit Gupta},
   title = {CCOFFEE: A Carbon-Modeling and Optimization Framework for HZO-based FeFET eNVMs},
   year = {2026}
 }
+
+```
 
 # License 
 COFFEE is licensed under the MIT License.
