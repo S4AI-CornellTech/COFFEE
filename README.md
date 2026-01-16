@@ -36,7 +36,7 @@ $$OP_{access} = CI_{location} \times Energy_{read/write}$$
 
 $Lifetime: The effective lifespan is limited by NVM write endurance:
 
-$$Lifetime = \frac{Capacity \times Endurance_{cycles}}{Daily_Access_Rate}$$
+$$Lifetime = \frac{Capacity \times Endurance_{cycles}}{Daily_{Access Rate}}$$
 
 
 # File structure
