@@ -11,7 +11,7 @@ This framework bridges the gap between **process-level parameters** (e.g., ALD d
 
 Central to this framework is an enhanced analytical model that estimates carbon emissions by combining the manufacturing overhead of the ferroelectric layer with baseline CMOS data.
 
-### A. Embodied Carbon (Eq. 3 & 4)
+### A. Embodied Carbon 
 To accurately model manufacturing overhead, we adopt an area-weighted formulation that separates conventional CMOS contributions from FeFET-specific ferroelectric layers:
 
 $$EPA_{FeFET} = EPA_{CMOS} + EPA_{FE-layer} \cdot AE$$
@@ -22,11 +22,8 @@ $$GPA_{FeFET} = GPA_{CMOS} + GPA_{FE-layer} \cdot AE$$
 * **$EPA/GPA_{CMOS}$:** Baseline metrics from standard logic processes (e.g., 28nm data from ACT).
 * **$EPA/GPA_{FE-layer}$:** The additional footprint derived from the Atomic Layer Deposition (ALD) of HZO/Al2O3 stacks.
 
-### B. Lifetime & Operational Carbon (Eq. 9)
-To complete the LCA, we combine embodied carbon with operational energy:
+### B. Lifetime Analysis 
 
-**Operational Carbon:**
-$$OP_{access} = CI_{location} \times Energy_{read/write}$$
 
 **Lifetime Model:**
 The effective lifespan is limited by NVM write endurance:
