@@ -1,99 +1,98 @@
+
 # COFFEE: A Carbon-Modeling and Optimization Framework for HZO-based FeFET eNVMs
 
-COFFEE is a  carbon modeling framework designed to enable carbon-aware design space exploration for hafnium–zirconium-oxide (HZO) Ferroelectric FET (FeFET) based on chip memory systems. Built upon the foundational methodology of ACT, this tool extends the analytical boundaries from standard CMOS to emerging ferroelectric technologies.
+**COFFEE** is a carbon modeling framework designed to enable carbon-aware design space exploration for hafnium–zirconium-oxide (HZO) Ferroelectric FET (FeFET) based on-chip memory systems. Built upon the foundational methodology of **ACT**, this tool extends analytical boundaries from standard CMOS to emerging ferroelectric technologies.
 
-This framework bridges the gap between process-level parameters (e.g., ALD deposition rates, HZO thickness) and architecture-level metrics (e.g., area efficiency, dynamic energy from NVMExplorer), providing a holistic Life Cycle Analysis (LCA) for HZO FeFET hardware.
+This framework bridges the gap between **process-level parameters** (e.g., ALD deposition rates, HZO thickness) and **architecture-level metrics** (e.g., area efficiency, dynamic energy), providing a holistic Life Cycle Analysis (LCA) for HZO FeFET hardware.
 
+---
 
-
-# Carbon modeling model
+## 1. Carbon Modeling Methodology
 
 Central to this framework is an enhanced analytical model that estimates carbon emissions by combining the manufacturing overhead of the ferroelectric layer with baseline CMOS data.
 
-We highlight the key governing equations from the COFFEE paper below:
-
-1. Embodied Carbon 
-
-To accurately model the manufacturing overhead, we adopt an area-weighted formulation. This separates the contributions from the conventional CMOS baseline and the FeFET-specific ferroelectric layers.
-
-The total Energy Per Area (EPA) and Gas Per Area (GPA) for the FeFET process are calculated as:
+### A. Embodied Carbon (Eq. 3 & 4)
+To accurately model manufacturing overhead, we adopt an area-weighted formulation that separates conventional CMOS contributions from FeFET-specific ferroelectric layers:
 
 $$EPA_{FeFET} = EPA_{CMOS} + EPA_{FE-layer} \cdot AE$$
-
 $$GPA_{FeFET} = GPA_{CMOS} + GPA_{FE-layer} \cdot AE$$
 
-Where:
-$AE$ (Area Efficiency): The ratio of the ferroelectric deposition area (memory array) to the total chip area.
+**Where:**
+* **$AE$ (Area Efficiency):** The ratio of the ferroelectric deposition area (memory array) to the total chip area.
+* **$EPA/GPA_{CMOS}$:** Baseline metrics from standard logic processes (e.g., 28nm data from ACT).
+* **$EPA/GPA_{FE-layer}$:** The additional footprint derived from the Atomic Layer Deposition (ALD) of HZO/Al2O3 stacks.
 
-$EPA/GPA_{CMOS}$: Baseline metrics from standard logic processes (e.g., 28nm data from ACT).
+### B. Lifetime & Operational Carbon (Eq. 9)
+To complete the LCA, we combine embodied carbon with operational energy:
 
-$EPA/GPA_{FE-layer}$: The additional footprint derived specifically from the Atomic Layer Deposition (ALD) of HZO/Al2O3 stacks.
-
-2. Lifetime & Operational CarbonTo complete the LCA, we combine the embodied carbon with operational energy:
-Operational:
-
+**Operational Carbon:**
 $$OP_{access} = CI_{location} \times Energy_{read/write}$$
 
-$Lifetime: The effective lifespan is limited by NVM write endurance:
+**Lifetime Model:**
+The effective lifespan is limited by NVM write endurance:
+$$Lifetime = \frac{Endurance \cdot C_{mem}}{t_{write} \cdot W_{data}}$$
 
-$$
-  Lifetime = \frac{Endurance \cdot C_{mem}}{t_{write} \cdot W_{data}}
-  $$
+**Where:**
+* **$C_{mem}$:** The total capacity of the memory array.
+* **$t_{write}$:** Potential write traffic (number of write operations per day).
+* **$W_{data}$:** The array data width (size of each access).
+* **$Endurance$:** The intrinsic endurance limit of the specific FeFET device.
 
-Where:
-$C_{mem}$: The total capacity of the memory array.
-$t_{write}$: The potential write traffic (number of write operations per day).
-$W_{data}$: The array data width (size of each access).
-$Endurance$: The intrinsic endurance limit of the specific FeFET device.
+---
 
-3. Architecture Metrics Extraction
-To bridge the architecture-level simulations with our LCA model, we extract dynamic energy, latency, and area efficiency metrics directly from NVMExplorer outputs:
+## 2. Architecture Metrics Extraction
 
-**Extraction:**
+To bridge architecture-level simulations with our LCA model, we extract dynamic energy, latency, and area efficiency metrics directly from NVMExplorer outputs.
+
+**Run Extraction Script:**
 ```bash
 python src/nvm_utils.py --nvm_dir NVMExplorer/output/results --output inputs/nvm_output_example.csv
-
-# File structure
 ```
+
+---
+
+## 3. File Structure
+
+```text
 .
-│
-├── archs/                          # 
-│   ├── Cmos_logic/                 # Standard CMOS EPA/GPA data
-│   ├── carbon_intensity/           # Prior Work: Global grid carbon intensity
-│   └── fefet_extensions/           # Our Contribution: 
+├── archs/                          # Hardware Configuration Data
+│   ├── CMOS_logic/                 # Standard CMOS EPA/GPA data (from ACT)
+│   ├── carbon_intensity/           # Global grid carbon intensity data
+│   └── fefet_extensions/           # FeFET-specific process extensions
 │       ├── fefet_ald.json          # ALD process parameters (HZO/Al2O3)
-│       └── fefet_devices.json      # Database of specific FeFET device geometries
+│       └── fefet_devices.json      # Database of FeFET device geometries
 │
-├── src/                            # 
-│   ├── logic_model_HZO.py          # Extended model for HZO FeFET
-│   ├── lifetime_HZO.py             # Lifetime model for HZO FeFET
-│   ├── nvm_utils.py                # Result collection for NVMExplorer
-│   └── model_HZO.py                # Embodied carboon calculation for HZO FeFET
+├── src/                            # Source Code
+│   ├── logic_model_HZO.py          # Extended carbon model for HZO FeFET
+│   ├── lifetime_HZO.py             # Operational lifetime calculator
+│   ├── nvm_utils.py                # Result collector for NVMExplorer
+│   └── model_HZO.py                # Main embodied carbon calculation
 │
-└──inputs/                          # NVMExplorer output CSVs
-
+└── inputs/                         # Formatted NVMExplorer output CSVs
 ```
 
-# Getting Started
+---
 
-## Prerequisites
+## 4. Getting Started
 
+### Prerequisites
+* **Python:** 3.7+
+* **Pandas:** 2.3.3+
 
-1. python 3.7
-2. Pandas 2.3.3
-
-
-## Usage 
-
-Run the program using the command line:
+### Usage 
+To analyze the carbon footprint of a specific FeFET configuration, run the following command from the project root:
 
 ```bash
 python src/model_HZO.py
 ``` 
 
-If you use this tool, please cite our work:
+---
 
-```
+## 5. Citation
+
+If you use this tool in your research, please cite our work:
+
+```bibtex
 @misc{wu2026coffee,
   title={COFFEE: A Carbon-Modeling and Optimization Framework for HZO-based FeFET eNVMs},
   author={Hongbang Wu and Xuesi Chen and Shubham Jadhav and Amit Lal and Lillian Pentecost and Udit Gupta},
@@ -105,5 +104,7 @@ If you use this tool, please cite our work:
 }
 ```
 
-# License 
-COFFEE is licensed under the MIT License.
+---
+
+## License 
+COFFEE is licensed under the **MIT License**.
