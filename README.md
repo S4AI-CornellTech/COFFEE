@@ -63,6 +63,10 @@ python src/nvm_utils.py --nvm_dir NVMExplorer/output/results --output inputs/nvm
 │   ├── nvm_utils.py                # Result collector for NVMExplorer
 │   └── model_HZO.py                # Main embodied carbon calculation
 │
+├── Figure_coffee/
+│
+├── NVMExplorer/
+│  
 └── inputs/                         # Formatted NVMExplorer output CSVs
 ```
 
