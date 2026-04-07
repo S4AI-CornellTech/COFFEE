@@ -36,27 +36,41 @@ $$OP_{access} = CI_{location} \times Energy_{read/write}$$
 
 $Lifetime: The effective lifespan is limited by NVM write endurance:
 
-$$Lifetime = \frac{Capacity \times Endurance_{cycles}}{Daily_{Access Rate}}$$
+$$
+  Lifetime = \frac{Endurance \cdot C_{mem}}{t_{write} \cdot W_{data}}
+  $$
 
+Where:
+$C_{mem}$: The total capacity of the memory array.
+$t_{write}$: The potential write traffic (number of write operations per day).
+$W_{data}$: The array data width (size of each access).
+$Endurance$: The intrinsic endurance limit of the specific FeFET device.
+
+3. Architecture Metrics Extraction
+To bridge the architecture-level simulations with our LCA model, we extract dynamic energy, latency, and area efficiency metrics directly from NVMExplorer outputs:
+
+**Extraction:**
+```bash
+python src/nvm_utils.py --nvm_dir NVMExplorer/output/results --output inputs/nvm_output_example.csv
 
 # File structure
 ```
 .
 │
-├── archs/                          # [Configuration Layer]
-│   ├── Cmos_logic/              # Standard CMOS EPA/GPA data
+├── archs/                          # 
+│   ├── Cmos_logic/                 # Standard CMOS EPA/GPA data
 │   ├── carbon_intensity/           # Prior Work: Global grid carbon intensity
 │   └── fefet_extensions/           # Our Contribution: 
 │       ├── fefet_ald.json          # ALD process parameters (HZO/Al2O3)
 │       └── fefet_devices.json      # Database of specific FeFET device geometries
 │
-├── src/                            # [Logic Layer]
-│   ├── logic_model.py              # Extended manufacturing model
-│   └── carbon_compute.py           # Holistic LCA calculator (Op + Embodied)
+├── src/                            # 
+│   ├── logic_model_HZO.py          # Extended model for HZO FeFET
+│   ├── lifetime_HZO.py             # Lifetime model for HZO FeFET
+│   ├── nvm_utils.py                # Result collection for NVMExplorer
+│   └── model_HZO.py                # Embodied carboon calculation for HZO FeFET
 │
-├── inputs/                         # NVMExplorer output CSVs
-├── outputs/                        # Generated Carbon Reports
-└── main.py                         # Main entry point
+└──inputs/                          # NVMExplorer output CSVs
 
 ```
 
@@ -74,18 +88,21 @@ $$Lifetime = \frac{Capacity \times Endurance_{cycles}}{Daily_{Access Rate}}$$
 Run the program using the command line:
 
 ```bash
-Python main.py
+python src/model_HZO.py
 ``` 
 
 If you use this tool, please cite our work:
 
 ```
-COFFEE (This Work):@misc{wu2026,
-  author = {Hongbang Wu, Xuesi Chen, Shubham Jadhav, Amit Lal, Lillian Pentecost, and Udit Gupta},
-  title = {CCOFFEE: A Carbon-Modeling and Optimization Framework for HZO-based FeFET eNVMs},
-  year = {2026}
+@misc{wu2026coffee,
+  title={COFFEE: A Carbon-Modeling and Optimization Framework for HZO-based FeFET eNVMs},
+  author={Hongbang Wu and Xuesi Chen and Shubham Jadhav and Amit Lal and Lillian Pentecost and Udit Gupta},
+  year={2026},
+  eprint={2602.05018},
+  archivePrefix={arXiv},
+  primaryClass={cs.AR},
+  url={[https://doi.org/10.48550/arXiv.2602.05018](https://doi.org/10.48550/arXiv.2602.05018)}
 }
-
 ```
 
 # License 

@@ -3,12 +3,15 @@
 # LICENSE file in the root directory of this source tree.
 
 # MODIFIED to include FeFET ALD process energy calculations
-# MODIFIED AGAIN to load FeFET parameters from a JSON config file.
-# MODIFIED AGAIN to accept thickness overrides for HZO and AI2O3
+# MODIFIED to load FeFET parameters from a JSON config file.
+# MODIFIED to accept thickness overrides for HZO and AI2O3
+# NOTE: FeFET area efficiency is loaded directly from fefet_ald.json. 
+#       Users can modify this value in the JSON file directly using 
+#       the extraction results from NVMExplorer for specific configurations.
 
 import json
 import sys
-import os # Import os module to create 'logic' directory
+import os
 
 class Fab_Logic():
     def __init__(self, process_node=28,
@@ -16,40 +19,47 @@ class Fab_Logic():
                        carbon_intensity="loc_taiwan",
                        debug=False,
                        fab_yield=0.875,
-                       fefet_config_path="logic/fefet_ald.json", # Path to the FeFET parameters JSON file
-                       override_thickness_hzo=None,  # <-- MODIFIED: Added override parameter
-                       override_thickness_al2o3=None   # <-- MODIFIED: Added override parameter
+                       fefet_config_path=None, 
+                       override_thickness_hzo=None,  
+                       override_thickness_al2o3=None   
                        ):
 
         self.debug = debug
 
+        # Set up dynamic paths based on the new project structure
+        CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+        PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
+        ARCHS_DIR = os.path.join(PROJECT_ROOT, 'archs')
+        
+        if fefet_config_path is None:
+            fefet_config_path = os.path.join(ARCHS_DIR, 'fefet_extensions', 'fefet_ald.json')
+
         ###############################
         # Energy per unit area (CMOS)
         ###############################
-        with open("logic/epa.json", 'r') as f:
+        with open(os.path.join(ARCHS_DIR, 'CMOS_logic', 'epa.json'), 'r') as f:
             epa_config = json.load(f)
 
         ###############################
         # Raw materials per unit area (CMOS)
         ###############################
-        with open("logic/materials.json", 'r') as f:
+        with open(os.path.join(ARCHS_DIR, 'CMOS_logic', 'materials.json'), 'r') as f:
             materials_config = json.load(f)
 
         ###############################
         # Gasses per unit area (CMOS)
         ###############################
+        gpa_dir = os.path.join(ARCHS_DIR, 'CMOS_logic')
         if gpa == "95":
-            with open("logic/gpa_95.json", 'r') as f:
+            with open(os.path.join(gpa_dir, 'gpa_95.json'), 'r') as f:
                 gpa_config = json.load(f)
-        # ... (gpa "99" and "97" logic remains the same) ...
         elif gpa == "99":
-            with open("logic/gpa_99.json", 'r') as f:
+            with open(os.path.join(gpa_dir, 'gpa_99.json'), 'r') as f:
                 gpa_config = json.load(f)
-
         elif gpa == "97":
-            with open("logic/gpa_95.json", 'r') as f:
+            with open(os.path.join(gpa_dir, 'gpa_95.json'), 'r') as f:
                 gpa_95_config = json.load(f)
-            with open("logic/gpa_99.json", 'r') as f:
+            with open(os.path.join(gpa_dir, 'gpa_99.json'), 'r') as f:
                 gpa_99_config = json.load(f)
 
             gpa_config = {}
@@ -76,17 +86,16 @@ class Fab_Logic():
         ###############################
         # Carbon intensity of fab
         ###############################
+        ci_dir = os.path.join(ARCHS_DIR, 'carbon_intensity')
         if "loc" in carbon_intensity:
-            # Using 2022 location file as per user's draft
-            with open("carbon_intensity/location.json", 'r') as f:
+            with open(os.path.join(ci_dir, 'location.json'), 'r') as f:
                 loc_configs = json.load(f)
-            # ... (carbon intensity logic remains the same) ...
             loc = carbon_intensity.replace("loc_", "")
             assert loc in loc_configs.keys()
             fab_ci = loc_configs[loc]
 
         elif "src" in carbon_intensity:
-            with open("carbon_intensity/source.json", 'r') as f:
+            with open(os.path.join(ci_dir, 'source.json'), 'r') as f:
                 src_configs = json.load(f)
             src = carbon_intensity.replace("src_", "")
             assert src in src_configs.keys()
@@ -96,12 +105,10 @@ class Fab_Logic():
             sys.exit()
 
         ###############################
-        # Energy per unit area (FeFET ALD)
+        # Energy per unit area (Ferroelectric Layer - FEL)
         ###############################
         
-        # --- MODIFICATION START ---
         # Check for thickness overrides
-        # Use the override value if provided, otherwise default to the value from the JSON config
         thickness_hzo = override_thickness_hzo if override_thickness_hzo is not None else fefet_config['Thickness_HZO']
         thickness_al2o3 = override_thickness_al2o3 if override_thickness_al2o3 is not None else fefet_config['Thickness_AI2O3']
 
@@ -111,7 +118,6 @@ class Fab_Logic():
         # Use the (potentially overridden) thickness values in calculations
         Time_AI2O3 = (thickness_al2o3 / fefet_config['RateAI2O3']) * fefet_config['CycleTime_AI2O3']
         Time_HZO = (thickness_hzo / fefet_config['RateHZO']) * fefet_config['CycleTime_HZO']
-        # --- MODIFICATION END ---
         
         total_ald_process_time = Time_AI2O3 + Time_HZO + fefet_config['PreheatTime'] + fefet_config['StableTime']
         
@@ -119,13 +125,15 @@ class Fab_Logic():
         process_energy_kwh = (fefet_config['ALD_Power_Preheat'] * fefet_config['PreheatTime'] +
                               (Time_AI2O3 + Time_HZO + fefet_config['StableTime']) * fefet_config['ALD_Power_Stable']) / 3600.0
 
-        self.fefet_total_energy_kwh = process_energy_kwh / fefet_config['tool_efficiency'] / fefet_config['fab_overhead_factor']
+        # Changed to fel_total_energy_kwh
+        self.fel_total_energy_kwh = process_energy_kwh / fefet_config['tool_efficiency'] / fefet_config['fab_overhead_factor']
         
-        fefet_epa = self.fefet_total_energy_kwh / fefet_config['Area_Wafer']  # (kWh / cm^2)
+        # Changed to fel_epa
+        fel_epa = self.fel_total_energy_kwh / fefet_config['Area_Wafer']  # (kWh / cm^2)
 
 
         ###############################
-        # Aggregating model (CMOS + FeFET)
+        # Aggregating model (CMOS + FEL = FeFET)
         ###############################
         process_node_str = str(process_node) + "nm"
         assert process_node_str in epa_config.keys()
@@ -136,10 +144,11 @@ class Fab_Logic():
         cmos_gpa = gpa_config[process_node_str]
         cmos_materials = materials_config[process_node_str]
 
-        # Use fefet_area_efficiency from fefet_config
-        self.total_epa_die = cmos_epa + (fefet_epa * fefet_config['fefet_area_efficiency'])
+        # Use fefet_area_efficiency directly from fefet_config. 
+        # Changed total_epa_die to self.fefet_epa
+        self.fefet_epa = cmos_epa + (fel_epa * fefet_config['fefet_area_efficiency'])
 
-        carbon_energy    = fab_ci * self.total_epa_die
+        carbon_energy    = fab_ci * self.fefet_epa
         carbon_gas       = cmos_gpa
         carbon_materials = cmos_materials
 
@@ -150,12 +159,13 @@ class Fab_Logic():
             print("--- [Fab Logic Debug] ---")
             print(f"[Fab CMOS] Process Node: {process_node_str}")
             print(f"[Fab CMOS] EPA (die): {cmos_epa:.4f} kWh/cm²")
-            print(f"[Fab FeFET] AI2O3 Deposition Time: {Time_AI2O3:.2f} s")
-            print(f"[Fab FeFET] HZO Deposition Time: {Time_HZO:.2f} s")
-            print(f"[Fab FeFET] Total ALD Process Time: {total_ald_process_time:.2f} s")
-            print(f"[Fab FeFET] Total ALD Energy (fab): {self.fefet_total_energy_kwh:.4f} kWh")
-            print(f"[Fab FeFET] FEL EPA (wafer): {fefet_epa:.4f} kWh/cm²")
-            print(f"[Fab Aggregate] Total EPA (scaled, die): {self.total_epa_die:.4f} kWh/cm²")
+            print(f"[Fab FEL] Area Efficiency: {fefet_config['fefet_area_efficiency']:.4f}")
+            print(f"[Fab FEL] AI2O3 Deposition Time: {Time_AI2O3:.2f} s")
+            print(f"[Fab FEL] HZO Deposition Time: {Time_HZO:.2f} s")
+            print(f"[Fab FEL] Total ALD Process Time: {total_ald_process_time:.2f} s")
+            print(f"[Fab FEL] Total ALD Energy (fab): {self.fel_total_energy_kwh:.4f} kWh")
+            print(f"[Fab FEL] FEL EPA (wafer): {fel_epa:.4f} kWh/cm²")
+            print(f"[Fab Aggregate] FeFET EPA (scaled, die): {self.fefet_epa:.4f} kWh/cm²")
             print("--- [Carbon Breakdown (per die area, pre-yield)] ---")
             print(f"[Fab Carbon] Energy: {carbon_energy:.4f} kgCO2e/cm²")
             print(f"[Fab Carbon] Gas: {carbon_gas:.4f} kgCO2e/cm²")
@@ -167,7 +177,7 @@ class Fab_Logic():
         return
 
 
-    def get_cpa(self,):
+    def get_cpa(self):
         """Returns the total carbon per unit area (kgCO2e/cm^2)."""
         return self.carbon_per_area
 
@@ -176,14 +186,14 @@ class Fab_Logic():
         self.area = area
         self.carbon = self.area * self.carbon_per_area
 
-    def get_carbon(self, ):
+    def get_carbon(self):
         """Returns the total carbon (kgCO2e) for the set area."""
         return self.carbon
 
-    def get_total_epa(self):
-        """Returns the total combined EPA (CMOS + FeFET) per die area."""
-        return self.total_epa_die
+    def get_fefet_epa(self):
+        """Returns the total combined EPA (CMOS + FEL) per die area."""
+        return self.fefet_epa
 
-    def get_fefet_energy(self):
-        """Returns the total fab energy (kWh) for the FeFET ALD step."""
-        return self.fefet_total_energy_kwh
+    def get_fel_energy(self):
+        """Returns the total fab energy (kWh) for the FEL ALD step."""
+        return self.fel_total_energy_kwh
