@@ -23,10 +23,8 @@ $$GPA_{FeFET} = GPA_{CMOS} + GPA_{FE-layer} \cdot AE$$
 * **$EPA/GPA_{FE-layer}$:** The additional footprint derived from the Atomic Layer Deposition (ALD) of HZO/Al2O3 stacks.
 
 ### B. Lifetime Analysis 
+The lifetime for HZO FeFET is limited by device write endurance:
 
-
-**Lifetime Model:**
-The effective lifespan is limited by NVM write endurance:
 $$Lifetime = \frac{Endurance \cdot C_{mem}}{t_{write} \cdot W_{data}}$$
 
 **Where:**
