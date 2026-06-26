@@ -1,0 +1,3 @@
+[submodule "NVMExplorer"]
+	path = NVMExplorer
+	url = https://github.com/lpentecost/NVMExplorer.git
